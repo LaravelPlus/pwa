@@ -41,8 +41,13 @@ function getStrategy(pathname) {
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            const urlsToCache = [OFFLINE_PAGE, ...PRECACHE_URLS];
-            return cache.addAll(urlsToCache);
+            // Cache offline page first (critical)
+            return cache.add(OFFLINE_PAGE).then(() => {
+                // Cache build assets individually so one failure doesn't block install
+                return Promise.allSettled(
+                    PRECACHE_URLS.map((url) => cache.add(url))
+                );
+            });
         }).then(() => self.skipWaiting())
     );
 });
