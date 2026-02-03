@@ -136,6 +136,7 @@ final class PwaServiceProvider extends ServiceProvider
             $this->commands([
                 Console\Commands\InstallCommand::class,
                 Console\Commands\GenerateIconsCommand::class,
+                Console\Commands\GenerateServiceWorkerCommand::class,
                 Console\Commands\ClearCacheCommand::class,
                 Console\Commands\VapidCommand::class,
             ]);
