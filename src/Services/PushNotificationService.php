@@ -49,11 +49,16 @@ final class PushNotificationService
             $webPush->queueNotification($pushSubscription, $jsonPayload);
         }
 
+        $expiredEndpoints = [];
+
         foreach ($webPush->flush() as $report) {
             if ($report->isSubscriptionExpired()) {
-                $endpoint = $report->getRequest()->getUri()->__toString();
-                PushSubscription::query()->where('endpoint', $endpoint)->delete();
+                $expiredEndpoints[] = $report->getRequest()->getUri()->__toString();
             }
+        }
+
+        if ($expiredEndpoints !== []) {
+            PushSubscription::query()->whereIn('endpoint', $expiredEndpoints)->delete();
         }
     }
 }
